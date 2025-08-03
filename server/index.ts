@@ -20,13 +20,27 @@ interface Player {
 
 const players: { [id: string]: Player } = {};
 
+// Define spawn points that are valid within the new map
+const spawnPoints = [
+  [-30, 1, -30], // Corner position away from obstacles
+  [30, 1, 30],   // Opposite corner
+  [-30, 1, 30],  // Another corner
+  [30, 1, -30],  // Last corner
+  [0, 1, 15],    // Center position but away from center pillar and wall
+  [0, 7, -20]    // On the bridge platform
+];
+
 io.on('connection', (socket) => {
   console.log(`Player connected: ${socket.id}`);
+
+  // Select a spawn point for the new player
+  const spawnIndex = Object.keys(players).length % spawnPoints.length;
+  const spawnPosition: [number, number, number] = spawnPoints[spawnIndex] as [number, number, number];
 
   // Add new player
   players[socket.id] = {
     id: socket.id,
-    position: [0, 1, 0], // Start position
+    position: spawnPosition, // Use spawn position instead of fixed [0, 1, 0]
     rotation: [0, 0, 0],
   };
 
